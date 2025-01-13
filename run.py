@@ -6,7 +6,7 @@ def create_app():
     # Simple route to confirm backend is running
     @app.route('/')
     def home():
-        return "Backend is running successfully!"
+        return "Hello Abhay.. Your backend is running"
 
     return app
 
