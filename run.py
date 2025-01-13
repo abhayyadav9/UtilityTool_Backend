@@ -6,7 +6,7 @@ def create_app():
 
     @app.route('/')
     def home():
-        return "Hello Abhay.. Your backend is running"
+        return "Backend is running successfully!"
 
     return app
 
@@ -14,5 +14,5 @@ app = create_app()
 
 if __name__ == "__main__":
     # Use the port from the environment or default to 5000
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  # Ensure the port is dynamically set
     app.run(host='0.0.0.0', port=port)
