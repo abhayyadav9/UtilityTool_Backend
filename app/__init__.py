@@ -4,7 +4,9 @@ import os
 
 def create_app():
     app = Flask(__name__)
+
     CORS(app)
+    
 
     # Register blueprints
     from app.routes.remove_background import remove_bg_bp

@@ -16,6 +16,7 @@ def allowed_file(filename):
 # Route for file upload and resizing
 @image_resizer.route('/resize', methods=['POST'])
 def resize_image():
+    print("Request received")
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
