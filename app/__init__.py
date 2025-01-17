@@ -29,4 +29,3 @@ def create_app():
     app.register_blueprint(image_resizer)
 
     return app
-export app1 = create_app()
