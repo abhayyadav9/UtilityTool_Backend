@@ -1,14 +1,19 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Flask, Blueprint, request, jsonify, send_file
 import os
 from werkzeug.utils import secure_filename
-import pythoncom
-from win32com import client
+import pypandoc
+
 
 # Define the blueprint
 converter = Blueprint('doc_pdf_converter', __name__)
 
-# Define allowed file extensions
+# Allowed file extensions
 ALLOWED_EXTENSIONS = {'docx'}
+
+# Upload folder setup
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Function to check file extension
 def allowed_file(filename):
@@ -18,34 +23,29 @@ def allowed_file(filename):
 @converter.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        return jsonify({"error": "No file uploaded"}), 400
     
     file = request.files['file']
-    print(file)
-    
+
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        upload_folder = os.path.join(os.getcwd(), 'uploads')  # Path for uploads
-        os.makedirs(upload_folder, exist_ok=True)
-        filepath = os.path.join(upload_folder, filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
         try:
             # Convert DOCX to PDF
             pdf_path = convert_docx_to_pdf(filepath)
-            # Send the converted PDF file back to the client
             return send_file(pdf_path, as_attachment=True, download_name="converted_file.pdf", mimetype="application/pdf")
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+    
     return jsonify({"error": "Invalid file format"}), 400
 
-# Function to convert DOCX to PDF
+# Function to convert DOCX to PDF using Pandoc
 def convert_docx_to_pdf(docx_path):
-    pythoncom.CoInitialize()
-    word = client.Dispatch("Word.Application")
-    doc = word.Documents.Open(docx_path)
     pdf_path = docx_path.rsplit('.', 1)[0] + '.pdf'
-    doc.SaveAs(pdf_path, FileFormat=17)  # 17 represents the PDF format
-    doc.Close()
-    word.Quit()
+    output = pypandoc.convert_file(docx_path, 'pdf', outputfile=pdf_path)
+    if output:
+        print("Conversion output:", output)  # Debugging log
     return pdf_path
+
