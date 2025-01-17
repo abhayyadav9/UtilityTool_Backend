@@ -1,14 +1,15 @@
 import os
 from flask import Flask
+from app import create_app  # Import create_app from your app module
 
-def create_app():
-    app = Flask(__name__)
+# def create_app():
+#     app = Flask(__name__)
 
-    @app.route('/')
-    def home():
-        return "Hey Abhay! Your Backend is running successfully!"
+#     @app.route('/')
+#     def home():
+#         return "Hey Abhay! Your Backend is running successfully!"
 
-    return app
+#     return app
 
 app = create_app()
 
